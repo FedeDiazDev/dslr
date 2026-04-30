@@ -3,6 +3,8 @@ import pandas as pd
 import sys
 import json
 
+from pathlib import Path
+
 # -----------------------
 # Sigmoid
 # -----------------------
@@ -64,7 +66,8 @@ def predict_ova(X, all_theta):
 # Guardar CSV
 # -----------------------
 def save_predictions(predictions, classes):
-    with open("outputs/houses.csv", "w") as f:
+    path = Path(__file__).resolve().parent / "outputs" / "houses.csv"
+    with open(path, "w") as f:
         f.write("Index,Hogwarts House\n")
 
         for i, pred in enumerate(predictions):
