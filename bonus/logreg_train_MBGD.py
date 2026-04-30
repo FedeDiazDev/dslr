@@ -9,28 +9,29 @@ import json
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
-# -----------------------
-# Stochastic Gradient Descent
-# -----------------------
-def stochastic_gradient_descent(X, y, theta, alpha, epochs):
+# -----------------------------
+# Mini Batch Gradient Descent
+# -----------------------------
+def mini_batch_gradient_descent(X, y, theta, alpha, epochs, batch_size):
     m = len(y)
 
     for epoch in range(epochs):
         # data shuffle
         index = np.random.permutation(m) 
-
         X = X[index]
         y = y[index]
 
         # alpha = init_alpha / (1 + epoch * 0.1)
 
         for i in range(m):
-            xi = X[i]
-            yi = y[i]
+            x_batch = X[i:i+batch_size]
+            y_batch = y[i:i+batch_size]
 
-            h = sigmoid(np.dot(xi, theta))
-            error = h - yi
-            theta -= alpha * error * xi # θ=θ−α⋅(h(xi)−yi)xi
+            h = sigmoid(x_batch @ theta)
+
+            gradient = ((1/len(y_batch)) * (x_batch.T @ (h - y_batch)))
+
+            theta -= alpha * gradient
 
         if epoch % 10 == 0:
             print(f"Epoch {epoch}")
@@ -70,7 +71,7 @@ def normalize(X):
 # -----------------------
 # One-vs-All
 # -----------------------
-def train_ova(X, y, classes, alpha=0.01, epochs=50, debug=True):
+def train_ova(X, y, classes, alpha=0.01, epochs=50, batch_size=32):
     m, n = X.shape
     X = np.c_[np.ones((m, 1)), X]
 
@@ -82,7 +83,7 @@ def train_ova(X, y, classes, alpha=0.01, epochs=50, debug=True):
         y_binary = (y == c).astype(int)
         theta = np.zeros(n + 1)
 
-        theta = stochastic_gradient_descent(X, y_binary, theta, alpha, iters)
+        theta = mini_batch_gradient_descent(X, y_binary, theta, alpha, epochs, batch_size)
 
         all_theta[i] = theta
 
@@ -99,7 +100,7 @@ def save_model(all_theta, mean, std, classes):
         "classes": classes.tolist()
     }
 
-    with open("outputs/SGD_model.json", "w") as f:
+    with open("outputs/MBGD_model.json", "w") as f:
         json.dump(model, f)
 
 # -----------------------
