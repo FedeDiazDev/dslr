@@ -6,7 +6,7 @@ class Describe:
     def __init__(self, df):
         self.df = df.select_dtypes(include=['number'])
         self.columns = self.df.columns
-        self.stats_names = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
+        self.stats_names = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max", "Range", "IQR", "Var"]
         self.results = {}
 
     def get_count(self, values):
@@ -54,19 +54,30 @@ class Describe:
                     "25%": float('nan'),
                     "50%": float('nan'),
                     "75%": float('nan'),
-                    "Max": float('nan')
+                    "Max": float('nan'),
+                    "Range": float('nan'),
+                    "IQR": float('nan'),
+                    "Var": float('nan')
                 }
                 continue
             mean = self.get_mean(raw_values)
+            max_value = raw_values[-1]
+            min_value = raw_values[0]
+            std = self.get_std(raw_values, mean)
+            q25 = self.get_percentile(raw_values, 0.25)
+            q75 = self.get_percentile(raw_values, 0.75)
             self.results[col] = {
                 "Count": self.get_count(raw_values),
                 "Mean": mean,
-                "Std": self.get_std(raw_values, mean),
-                "Min": raw_values[0],
-                "25%": self.get_percentile(raw_values, 0.25),
+                "Std": std,
+                "Min": min_value,
+                "25%": q25,
                 "50%": self.get_percentile(raw_values, 0.50),
-                "75%": self.get_percentile(raw_values, 0.75),
-                "Max": raw_values[-1]
+                "75%": q75,
+                "Max": max_value,
+                "Range" : max_value - min_value,
+                "IQR" : q75 - q25,
+                "Var": std **2
             }
 
     def display(self):
