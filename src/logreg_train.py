@@ -8,6 +8,7 @@ from pathlib import Path
 from bonus.methods import batch_gradient_descent
 from bonus.methods import stochastic_gradient_descent
 from bonus.methods import mini_batch_gradient_descent
+from bonus.methods import momentum_gradient_descent
 
 # -----------------------
 # Cargar datos correctamente
@@ -43,7 +44,7 @@ def normalize(X):
 # -----------------------
 # One-vs-All
 # -----------------------
-def train_ova(X, y, classes, method, debug=False, alpha=0.1, iters=1000, epochs=50, batch_size=32):
+def train_ova(X, y, classes, method, debug=False, alpha=0.1, iters=1000, epochs=50, batch_size=32, beta=0.9):
     m, n = X.shape
     X = np.c_[np.ones((m, 1)), X]
 
@@ -65,6 +66,9 @@ def train_ova(X, y, classes, method, debug=False, alpha=0.1, iters=1000, epochs=
             case "mini-batch":
                 alpha = 0.01
                 theta = mini_batch_gradient_descent(X, y_binary, theta, alpha, epochs, batch_size, debug)
+            case "momentum":
+                alpha = 0.1
+                theta = momentum_gradient_descent(X, y_binary, theta, alpha, iters, beta, debug)
             case _:
                 raise ValueError("Método no soportado")
 

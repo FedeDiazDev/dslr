@@ -98,3 +98,24 @@ def mini_batch_gradient_descent(X, y, theta, alpha, epochs, batch_size, debug):
 
     return theta
 
+
+# -----------------------
+# Momentum Gradient Descent
+# -----------------------
+def momentum_gradient_descent(X, y, theta, alpha, epochs, beta, debug):
+    m = len(y)
+    velocity = np.zeros_like(theta)
+
+    for epoch in range(epochs):
+        h = sigmoid(X @ theta)
+        gradient = (1 / m) * (X.T @ (h - y))
+
+        velocity = beta * velocity + (1 - beta) * gradient
+        theta -= alpha * velocity
+
+        if debug and (epoch % 10 == 0):
+            cost = compute_cost(X, y, theta)
+            print(f"Epoch {epoch} - cost: {cost}")
+
+    return theta
+
