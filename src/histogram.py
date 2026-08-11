@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-df = pd.read_csv("../data/dataset_train.csv");
+df = pd.read_csv("../data/dataset_train.csv")
 
 def parse_data (df):
     return df.select_dtypes(include=['float64']).columns
